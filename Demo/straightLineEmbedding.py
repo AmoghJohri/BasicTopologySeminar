@@ -37,8 +37,8 @@ def strictlyConvexMapping(G):
             else:
                 Ax[pos][getArrPosition(interiorNodes, neighbor)] = (-1./di)
                 Ay[pos][getArrPosition(interiorNodes, neighbor)] = (-1./di)
-        Ax[pos][pos] = (-1./di)
-        Ay[pos][pos] = (-1./di) 
+        Ax[pos][pos] = (1.)
+        Ay[pos][pos] = (1.) 
         bx[pos] = rhsx 
         by[pos] = rhsy 
 
@@ -57,34 +57,22 @@ if __name__ == "__main__":
     B = Node("B",boundary=False)
     C = Node("C",boundary=True)
     D = Node("D",boundary=True)
-    A.setEdgeList([B, C, D])
-    A_edge = [1, 2, 3]
-    B.setEdgeList([A, C, D])
-    B_edge = [1, 2, 3]
-    C.setEdgeList([A, B, D])
-    C_edge = [0, 1, 3]
-    D.setEdgeList([A, B, C])
-    D_edge = [0, 1, 2]
-    G = [A, B, C, D]
+    E = Node("E", boundary=False)
+    F = Node("F", boundary=False)
+    A.setEdgeList([B, C, D, E])
+    B.setEdgeList([A, C, E, F])
+    C.setEdgeList([A, B, D, F])
+    D.setEdgeList([A, E, C, F])
+    E.setEdgeList([A, B, D, F])
+    F.setEdgeList([B, C, D, E])
+    G = [A, B, C, D, E, F]
     strictlyConvexMapping(G)
-    X = []
-    Y = []
-    colors = ['c', 'b', 'g', 'r']
-    k = 0
     for each in G:
-        X.append(each.getValue()[0])
-        Y.append(each.getValue()[1])
-        plt.scatter(X[-1], Y[-1], 100, color = colors[k])
-        k += 1
-    plt.legend(["A", "B", "C", "D"])
-    for each in A_edge:
-        plt.plot([X[0], X[each]], [Y[0], Y[each]], color='k')
-    for each in B_edge:
-        plt.plot([X[1], X[each]], [Y[1], Y[each]],  color='k')
-    for each in C_edge:
-        plt.plot([X[2], X[each]], [Y[2], Y[each]],  color='k')
-    for each in D_edge:
-        plt.plot([X[3], X[each]], [Y[3], Y[each]],  color='k')
+        plt.scatter(each.getValue()[0], each.getValue()[1], 100)
+    plt.legend([each.getLabel() for each in G], loc = 'upper right')
+    for each in G:
+        for node in each.getEdgeList():
+            plt.plot([each.getValue()[0], node.getValue()[0]], [each.getValue()[1], node.getValue()[1]])
     t = np.linspace(0,np.pi*2,100)
     plt.plot(np.cos(t), np.sin(t), linewidth=1,  color='k')
     plt.grid()
